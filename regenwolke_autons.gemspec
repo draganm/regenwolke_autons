@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "childprocess", "~> 0.5.2"
   spec.add_dependency "nestene", "~> 0.1.4"
   spec.add_dependency "structure_mapper", "~> 0.0.2"
   spec.add_development_dependency "bundler", "~> 1.7"
