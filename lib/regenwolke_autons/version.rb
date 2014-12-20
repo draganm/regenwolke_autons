@@ -1,0 +1,3 @@
+module RegenwolkeAutons
+  VERSION = "0.0.1"
+end
