@@ -20,9 +20,11 @@ module RegenwolkeAutons
     def start_nginx
       create_config
 
-      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("invalid nginx config")
+      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Invalid nginx config")
 
-      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("error starting nginx")
+      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Could not start nginx")
+
+      wait_for_nginx
 
     end
 
@@ -38,6 +40,15 @@ module RegenwolkeAutons
       true
     rescue Errno::ECONNREFUSED
       false
+    end
+
+
+    def wait_for_nginx
+      (1..20).each do
+        return if nginx_running?
+        sleep 0.1
+      end
+      raise "nginx didn't start within 20 seconds"
     end
 
 
