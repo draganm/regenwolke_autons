@@ -14,7 +14,8 @@ module RegenwolkeAutons
     attr_accessor :context
 
     def start
-      context.schedule_step(:start_nginx)
+      context.schedule_step(:start_nginx_if_not_running)
+      context.schedule_repeating_delayed_step 10, 10, :start_nginx_if_not_running
     end
 
     def start_nginx
@@ -26,7 +27,7 @@ module RegenwolkeAutons
       self.pid =  cp.pid
     end
 
-    def check_process
+    def start_nginx_if_not_running
       context.schedule_step(:start_nginx) unless nginx_process_exist?
     end
 
