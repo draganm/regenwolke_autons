@@ -7,7 +7,6 @@ module RegenwolkeAutons
 
     include StructureMapper::Hash
 
-    attribute pid: Fixnum
     attribute stdout: String
     attribute stderr: String
 
@@ -21,10 +20,10 @@ module RegenwolkeAutons
     def start_nginx
       create_config
 
-      cp = ChildProcess.build('nginx', '-p', 'regenwolke/nginx', '-c', 'nginx.config')
-      cp.detach = true
-      cp.start
-      self.pid =  cp.pid
+      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise "invalid nginx config"
+
+      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise "error starting nginx"
+
     end
 
     def start_nginx_if_not_running
@@ -34,6 +33,14 @@ module RegenwolkeAutons
     private
 
     def nginx_process_exist?
+      unless File.exist?('nginx.pid')
+        false
+      else
+        process_exist?(File.read('nginx.pid').to_i)
+      end
+    end
+
+    def process_exist?(pid)
       if pid
         begin
           Process.getpgid( pid )
