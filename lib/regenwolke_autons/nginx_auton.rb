@@ -34,10 +34,14 @@ module RegenwolkeAutons
     private
 
     def nginx_process_exist?
-      begin
-        Process.getpgid( pid )
-        true
-      rescue Errno::ESRCH
+      if pid
+        begin
+          Process.getpgid( pid )
+          true
+        rescue Errno::ESRCH
+          false
+        end
+      else
         false
       end
     end
