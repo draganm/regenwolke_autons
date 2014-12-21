@@ -30,6 +30,8 @@ module RegenwolkeAutons
 
           subject.deploy_application('app1','some_sha1')
 
+          expect(subject.applications).to include('app1')
+
         end
       end
 

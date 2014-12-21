@@ -25,6 +25,7 @@ module RegenwolkeAutons
 
       unless applications.include?(name)
         context.create_auton 'RegenwolkeAutons::ApplicationAuton', application_auton_name(name)
+        self.applications << name
       end
 
       context.schedule_step_on_auton(application_auton_name(name),:deploy,[git_sha])

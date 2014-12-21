@@ -13,13 +13,13 @@ module RegenwolkeAutons
     attr_accessor :context
 
     def initialize
-      free_ports=[]
-      used_ports={}
+      self.free_ports=[]
+      self.used_ports={}
     end
 
     def start
-      free_ports=(10_000 .. 10_000+50).to_a
-      used_ports={}
+      self.free_ports=(10_000 .. 10_000+50).to_a
+      self.used_ports={}
     end
 
     def allocate_port(deployment_id)
