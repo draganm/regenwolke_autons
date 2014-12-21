@@ -21,7 +21,7 @@ module RegenwolkeAutons
     def start_nginx
       create_config
 
-      cp = ChildProcess.build('nginx', '-p', '.', '-c', 'nginx.config')
+      cp = ChildProcess.build('nginx', '-p', 'regenwolke/nginx', '-c', 'nginx.config')
       cp.detach = true
       cp.start
       self.pid =  cp.pid
@@ -49,7 +49,7 @@ module RegenwolkeAutons
     def create_config
       applications={'regenwolke' => [['localhost',ENV['PORT'] || 5000]]}
       erb = ERB.new File.read(File.expand_path('../nginx_config.erb', __FILE__))
-      File.write("nginx.config",erb.result(binding))
+      File.write("regenwolke/nginx/nginx.config",erb.result(binding))
     end
 
   end
