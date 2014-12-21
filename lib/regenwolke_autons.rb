@@ -14,8 +14,8 @@ module RegenwolkeAutons
       Dir.mkdir('regenwolke/nginx') unless File.exists?('regenwolke/nginx')
 
       unless Celluloid::Actor[:nestene_core].auton_names.include?('nginx')
-        Celluloid::Actor[:nestene_core].create_auton('RegenwolkeAutons::NginxAuton','nginx')
-        Celluloid::Actor[:nestene_core].schedule_step('nginx', 'start')
+        Celluloid::Actor[:nestene_core].create_auton('RegenwolkeAutons::RegenwolkeAuton','regenwolke')
+        Celluloid::Actor[:nestene_core].schedule_step('regenwolke', 'start')
       end
     end
   end
