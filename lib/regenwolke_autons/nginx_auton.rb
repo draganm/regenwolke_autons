@@ -44,7 +44,7 @@ module RegenwolkeAutons
     end
 
     def create_config
-      applications={'regenwolke' => ['localhost',[ENV['PORT'] || 5000]]}
+      applications={'regenwolke' => [['localhost',[ENV['PORT'] || 5000]]]}
       erb = ERB.new File.read(File.expand_path('../nginx_config.erb', __FILE__))
       File.write("nginx.config",erb.result(binding))
     end
