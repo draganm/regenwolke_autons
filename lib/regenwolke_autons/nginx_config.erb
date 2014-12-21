@@ -39,11 +39,15 @@ http {
 #    '$request_time $upstream_response_time $pipe';
 
 
+    server {
+      listen 9080;
+      return 404;
+    }
 
-    <% applications.each do |host, ports| %>
+    <% applications.each do |host, endpoints| %>
       upstream <%= host.gsub('.','_') %> {
-        <% ports.each do |port| %>
-          server localhost:<%= port %>;
+        <% endpoints.each do |(endpoint_host,port)| %>
+          server <%= endpoint_host %>:<%= port %>;
           <% end %>
           keepalive 50;
         }
