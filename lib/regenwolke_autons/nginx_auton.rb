@@ -33,10 +33,10 @@ module RegenwolkeAutons
     private
 
     def nginx_process_exist?
-      unless File.exist?('nginx.pid')
-        false
-      else
+      if File.exist?('nginx.pid') && !File.zero?('nginx.pid')
         process_exist?(File.read('nginx.pid').to_i)
+      else
+        false
       end
     end
 
