@@ -7,7 +7,7 @@ module RegenwolkeAutons
 
     include StructureMapper::Hash
 
-    attribute stdout: String
+    attribute endpoints: {String => Fixnum}
     attribute stderr: String
 
     attr_accessor :context
@@ -27,6 +27,12 @@ module RegenwolkeAutons
       wait_for_nginx
 
     end
+
+    def update_endpoints new_endpoints, endpoints_to_delete
+      # TODO implement and test
+    end
+
+
 
     def start_nginx_if_not_running
       context.schedule_step(:start_nginx) unless nginx_running?

@@ -25,6 +25,7 @@ module RegenwolkeAutons
 
       unless applications.include?(name)
         context.create_auton 'RegenwolkeAutons::ApplicationAuton', application_auton_name(name)
+        context.schedule_step_on_auton application_auton_name(name), :start
         self.applications << name
       end
 
