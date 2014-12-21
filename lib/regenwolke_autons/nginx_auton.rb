@@ -20,9 +20,9 @@ module RegenwolkeAutons
     def start_nginx
       create_config
 
-      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise "invalid nginx config"
+      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("invalid nginx config")
 
-      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise "error starting nginx"
+      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("error starting nginx")
 
     end
 
