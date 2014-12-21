@@ -19,7 +19,10 @@ module RegenwolkeAutons
 
     def start_nginx
       create_config
-      cp = ChildProcess.build('nginx', '-p', '.', '-c', 'nginx.config')
+
+      nginx_binary = File.exist?('/usr/sbin/nginx') ? '/usr/sbin/nginx' : 'nginx'
+
+      cp = ChildProcess.build(nginx_binary, '-p', '.', '-c', 'nginx.config')
       cp.detach = true
       cp.start
       self.pid =  cp.pid
