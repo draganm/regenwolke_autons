@@ -4,11 +4,21 @@ module RegenwolkeAutons
 
   class RegenwolkeAuton
     include StructureMapper::Hash
+    attribute applications: [String]
+
 
     attr_accessor :context
 
     def initialize
       self.applications = []
+    end
+
+    def start
+      context.create_auton('RegenwolkeAutons::NginxAuton', 'nginx')
+      context.schedule_step('nginx', :start)
+
+      context.create_auton('RegenwolkeAutons::PortManagerAuton', 'port_manager')
+      context.schedule_step('port_manager', :start)
     end
 
     def deploy_application(name, git_sha)
@@ -22,7 +32,7 @@ module RegenwolkeAutons
 
     end
 
-    attribute applications: [String]
+
 
 
     private

@@ -9,6 +9,18 @@ module RegenwolkeAutons
       subject.context = context
     end
 
+
+    describe '#start' do
+      it "starts nginx and port_manager" do
+        expect(context).to receive(:create_auton).with("RegenwolkeAutons::NginxAuton", "nginx")
+        expect(context).to receive(:schedule_step).with("nginx", :start)
+        expect(context).to receive(:create_auton).with("RegenwolkeAutons::PortManagerAuton", "port_manager")
+        expect(context).to receive(:schedule_step).with("port_manager", :start)
+
+        subject.start
+      end
+    end
+
     describe '#deploy_application' do
       context 'when application does not exist' do
         it 'should create new application_auton and schedule deploy method on the application' do

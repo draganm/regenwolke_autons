@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "nestene", "~> 0.1.4"
   spec.add_dependency "structure_mapper", "~> 0.0.2"
+  spec.add_dependency "docker-api", '~> 1.17.0'
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.1"

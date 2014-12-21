@@ -17,7 +17,7 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(NginxAuton)
+  Nestene::Registry.register_auton(ApplicationAuton)
 end
 
 
