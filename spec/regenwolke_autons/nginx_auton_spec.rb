@@ -1,4 +1,3 @@
-require 'regenwolke_autons'
 module RegenwolkeAutons
 
   describe NginxAuton do
