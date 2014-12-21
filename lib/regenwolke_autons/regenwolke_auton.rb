@@ -15,10 +15,10 @@ module RegenwolkeAutons
 
     def start
       context.create_auton('RegenwolkeAutons::NginxAuton', 'nginx')
-      context.schedule_step('nginx', :start)
+      context.schedule_step_on_auton('nginx', :start)
 
       context.create_auton('RegenwolkeAutons::PortManagerAuton', 'port_manager')
-      context.schedule_step('port_manager', :start)
+      context.schedule_step_on_auton('port_manager', :start)
     end
 
     def deploy_application(name, git_sha)
@@ -27,7 +27,7 @@ module RegenwolkeAutons
         context.create_auton 'RegenwolkeAutons::ApplicationAuton', application_auton_name(name)
       end
 
-      context.schedule_step(application_auton_name(name),:deploy,[git_sha])
+      context.schedule_step_on_auton(application_auton_name(name),:deploy,[git_sha])
 
 
     end
