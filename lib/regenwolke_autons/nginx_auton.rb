@@ -1,5 +1,5 @@
 require 'structure_mapper'
-require 'childprocess'
+require 'socket'
 
 module RegenwolkeAutons
 
@@ -27,31 +27,19 @@ module RegenwolkeAutons
     end
 
     def start_nginx_if_not_running
-      context.schedule_step(:start_nginx) unless nginx_process_exist?
+      context.schedule_step(:start_nginx) unless nginx_running?
     end
 
     private
 
-    def nginx_process_exist?
-      if File.exist?('nginx.pid') && !File.zero?('nginx.pid')
-        process_exist?(File.read('nginx.pid').to_i)
-      else
-        false
-      end
+    def nginx_running?
+      socket = TCPSocket.new "localhost", 9080
+      socket.close
+      true
+    rescue Errno::ECONNREFUSED
+      false
     end
 
-    def process_exist?(pid)
-      if pid
-        begin
-          Process.getpgid( pid )
-          true
-        rescue Errno::ESRCH
-          false
-        end
-      else
-        false
-      end
-    end
 
     def create_config
       applications={'regenwolke' => [['localhost',ENV['PORT'] || 5000]]}
