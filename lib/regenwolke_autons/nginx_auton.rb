@@ -14,7 +14,7 @@ module RegenwolkeAutons
 
     def start
       context.schedule_step(:start_nginx_if_not_running)
-      context.schedule_repeating_delayed_step 10, 10, :start_nginx_if_not_running
+      context.schedule_repeating_delayed_step 90, 90, :start_nginx_if_not_running
     end
 
     def start_nginx
