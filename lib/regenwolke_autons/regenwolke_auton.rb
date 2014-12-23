@@ -20,7 +20,7 @@ module RegenwolkeAutons
       context.schedule_step_on_auton('port_manager', :start)
     end
 
-    def deploy_application(name, git_sha)
+    def deploy_application(name, git_sha1)
 
       unless applications.include?(name)
         context.create_auton 'RegenwolkeAutons::ApplicationAuton', application_auton_name(name)
@@ -28,7 +28,7 @@ module RegenwolkeAutons
         self.applications << name
       end
 
-      context.schedule_step_on_auton(application_auton_name(name),:deploy,[git_sha])
+      context.schedule_step_on_auton(application_auton_name(name),:deploy,[git_sha1])
 
     end
 

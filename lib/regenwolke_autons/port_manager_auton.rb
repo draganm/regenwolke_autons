@@ -16,7 +16,7 @@ module RegenwolkeAutons
     end
 
     def start
-      self.free_ports=(10_000 .. 10_000+50).to_a
+      self.free_ports=(10_000 ... 10_000+50).to_a
       self.used_ports={}
     end
 
