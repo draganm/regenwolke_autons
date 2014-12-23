@@ -3,9 +3,7 @@ require 'socket'
 
 module RegenwolkeAutons
 
-  class NginxAuton
-
-    include StructureMapper::Hash
+  class NginxAuton < Nestene::Auton
 
     attribute endpoints: {String => Fixnum}
     attribute stderr: String
@@ -32,8 +30,6 @@ module RegenwolkeAutons
       # TODO implement and test
     end
 
-
-
     def start_nginx_if_not_running
       context.schedule_step(:start_nginx) unless nginx_running?
     end
@@ -48,7 +44,6 @@ module RegenwolkeAutons
       false
     end
 
-
     def wait_for_nginx
       (1..20).each do
         return if nginx_running?
@@ -56,7 +51,6 @@ module RegenwolkeAutons
       end
       raise "nginx didn't start within 20 seconds"
     end
-
 
     def create_config
       applications={'regenwolke' => [['localhost',ENV['PORT'] || 5000]]}
@@ -66,7 +60,6 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(NginxAuton)
 end
 
 

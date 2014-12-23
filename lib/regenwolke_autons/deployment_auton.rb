@@ -2,9 +2,7 @@ require 'docker'
 
 module RegenwolkeAutons
 
-  class DeploymentAuton
-
-    include StructureMapper::Hash
+  class DeploymentAuton < Nestene::Auton
 
     attribute application_name: String
     attribute git_sha1: String
@@ -44,7 +42,6 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(DeploymentAuton)
 end
 
 

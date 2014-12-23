@@ -3,9 +3,7 @@ require 'socket'
 
 module RegenwolkeAutons
 
-  class PortManagerAuton
-
-    include StructureMapper::Hash
+  class PortManagerAuton < Nestene::Auton
 
     attribute free_ports: [Fixnum]
     attribute used_ports: {Fixnum => String}
@@ -35,7 +33,6 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(PortManagerAuton)
 end
 
 

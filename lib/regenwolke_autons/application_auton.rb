@@ -9,9 +9,7 @@ module RegenwolkeAutons
     attribute port: Fixnum
   end
 
-  class ApplicationAuton
-
-    include StructureMapper::Hash
+  class ApplicationAuton < Nestene::Auton
 
     attribute application_name: String
 
@@ -53,7 +51,6 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(ApplicationAuton)
 end
 
 

@@ -2,8 +2,7 @@ require 'structure_mapper'
 
 module RegenwolkeAutons
 
-  class RegenwolkeAuton
-    include StructureMapper::Hash
+  class RegenwolkeAuton < Nestene::Auton
     attribute applications: [String]
 
 
@@ -31,10 +30,7 @@ module RegenwolkeAutons
 
       context.schedule_step_on_auton(application_auton_name(name),:deploy,[git_sha])
 
-
     end
-
-
 
 
     private
@@ -45,7 +41,6 @@ module RegenwolkeAutons
 
   end
 
-  Nestene::Registry.register_auton(RegenwolkeAuton)
 end
 
 
