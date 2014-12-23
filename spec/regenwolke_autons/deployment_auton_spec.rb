@@ -53,7 +53,9 @@ module RegenwolkeAutons
 
     describe '#start_container' do
 
-      let(:docker_container) {double :docker_container}
+      let(:docker_container) {spy :docker_container}
+
+
 
       before do
         subject.port = 123
@@ -64,6 +66,7 @@ module RegenwolkeAutons
 
       it 'should start container' do
         expect(Docker::Container).to have_received(:create)
+        expect(docker_container).to have_received(:start)
       end
 
       it 'should schedule :notify_application' do

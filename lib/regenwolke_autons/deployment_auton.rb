@@ -27,16 +27,19 @@ module RegenwolkeAutons
     end
 
     def start_container
-      container = Docker::Container.create('Image' => 'progrium/buildstep')
+      container = Docker::Container.create('Image' => 'progrium/buildstep', 'Cmd' => ['/bin/bash', '-c', 'cd / && tar xf /app.tar && /start web'])
+      container.start
       self.container_id = container.id
       context.schedule_step(:notify_application)
     end
 
     def notify_application
+      application_auton_id = "application:%s" % application_name
+      context.schedule_step_on_auton(application_auton_id, :deployment_complete, self.git_sha1, self.port)
     end
 
     def terminate
-      # TODO implement and test
+      raise "TODO: not yet implemented"
     end
 
 
