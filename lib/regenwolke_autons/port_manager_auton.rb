@@ -20,15 +20,22 @@ module RegenwolkeAutons
       self.used_ports={}
     end
 
-    def allocate_port(deployment_id)
-      port = free_port.shift
-      used_ports[deployment_id]=port
+    def request_port(auton_id, method_name)
+      port = allocate_port(auton_id)
+      context.schedule_step_on_auton(auton_id, method_name, [port])
+    end
+
+    private
+
+    def allocate_port(auton_id)
+      port = free_ports.shift
+      used_ports[auton_id]=port
       port
     end
 
-    def free_port(deployment_id)
-      port = used_ports.delete(deployment_id)
-      free_port << port
+    def free_port(auton_id)
+      port = used_ports.delete(auton_id)
+      free_ports << port
     end
 
   end
