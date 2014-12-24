@@ -66,7 +66,9 @@ module RegenwolkeAutons
     end
 
     def terminate
-      raise "TODO: not yet implemented"
+      container = Docker::Container.get(self.container_id)
+      container.delete(:force => true)
+      context.schedule_step_on_auton('port_manager',:release_port, [context.auton_id, self.port])
     end
 
 

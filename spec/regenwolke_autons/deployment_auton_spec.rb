@@ -8,6 +8,26 @@ module RegenwolkeAutons
       subject.context = context
     end
 
+
+    describe '#terminate' do
+      let (:context) {double :context}
+      before do
+        subject.port = 123
+        subject.container_id = 'some_container_id'
+      end
+
+      let (:docker_container) {double :docker_container}
+
+      it "should delete container and release port to port manager" do
+        expect(Docker::Container).to receive(:get).with('some_container_id').and_return(docker_container)
+        expect(docker_container).to receive(:delete).with(force: true)
+        expect(context).to receive(:auton_id).and_return('some_auton_id')
+        expect(context).to receive(:schedule_step_on_auton).with('port_manager', :release_port, ['some_auton_id', 123])
+
+        subject.terminate
+      end
+    end
+
     describe '#start' do
 
       before do
