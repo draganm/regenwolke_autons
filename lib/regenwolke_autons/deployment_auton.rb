@@ -35,26 +35,20 @@ module RegenwolkeAutons
           '-c',
           'useradd u7680 && cd / && tar xf /app.tar && /start web'
         ],
-        'ExposedPorts' => {
-          "5000/tcp" => {}
-        },
         "Env" => [
           "PORT=5000"
         ],
-        "NetworkSettings" => {
-          "Ports" => {
+        "HostConfig" => {
+          "Binds" => [
+            "/regenwolke/capsules/#{self.application_name}-#{self.git_sha1}.tar:/app.tar:ro"
+          ],
+          "PortBindings" => {
             "5000/tcp" => [
               {
-                "HostIp" => "0.0.0.0",
+                "HostIp" => "",
                 "HostPort" => self.port.to_s
               }
             ]
-          },
-          "Volumes" => {
-            "/app.tar" => "/regenwolke/capsules/#{self.application_name}-#{self.git_sha1}.tar"
-          },
-          "VolumesRW" => {
-            "/app.tar" => false
           }
         }
       })
