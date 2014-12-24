@@ -27,7 +27,37 @@ module RegenwolkeAutons
     end
 
     def start_container
-      container = Docker::Container.create('Image' => 'progrium/buildstep', 'Cmd' => ['/bin/bash', '-c', 'cd / && tar xf /app.tar && /start web'])
+      # TODO extract creation of container config to a method and thorroughly test it
+      container = Docker::Container.create({
+        'Image' => 'progrium/buildstep',
+        'Cmd' => [
+          '/bin/bash',
+          '-c',
+          'useradd u7680 && cd / && tar xf /app.tar && /start web'
+        ],
+        'ExposedPorts' => {
+          "5000/tcp" => {}
+        },
+        "Env" => [
+          "PORT=5000"
+        ],
+        "NetworkSettings" => {
+          "Ports" => {
+            "5000/tcp" => [
+              {
+                "HostIp" => "0.0.0.0",
+                "HostPort" => self.port.to_s
+              }
+            ]
+          },
+          "Volumes" => {
+            "/app.tar" => "/regenwolke/capsules/#{self.application_name}-#{self.git_sha1}.tar"
+          },
+          "VolumesRW" => {
+            "/app.tar" => false
+          }
+        }
+      })
       container.start
       self.container_id = container.id
       context.schedule_step(:notify_application)
