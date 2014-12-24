@@ -18,13 +18,9 @@ module RegenwolkeAutons
 
     def start_nginx
       create_config
-
-      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Invalid nginx config")
-
-      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Could not start nginx")
-
+      check_current_config
+      start_nginx_process
       wait_for_nginx
-
     end
 
     def update_endpoints new_endpoints
@@ -34,6 +30,9 @@ module RegenwolkeAutons
 
 
     def reconfigure_nginx
+      create_config
+      check_current_config
+      reload_nginx_config
     end
 
     def start_nginx_if_not_running
@@ -41,6 +40,18 @@ module RegenwolkeAutons
     end
 
     private
+
+    def reload_nginx_config
+      system('nginx','-p', 'regenwolke/nginx', '-s', 'reload') || raise("Could not reload nginx config")
+    end
+
+    def start_nginx_process
+      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Could not start nginx")
+    end
+
+    def check_current_config
+      system('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config') || raise("Invalid nginx config")
+    end
 
     def nginx_running?
       socket = TCPSocket.new "localhost", 9080

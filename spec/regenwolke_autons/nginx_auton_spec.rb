@@ -63,6 +63,17 @@ module RegenwolkeAutons
     end
 
 
+    describe '#reconfigure_nginx' do
+
+      it 'should create new nginx config, check config and reload config' do
+        expect(subject).to receive(:create_config)
+        expect(subject).to receive(:check_current_config)
+        expect(subject).to receive(:reload_nginx_config)
+        subject.reconfigure_nginx
+      end
+
+    end
+
     describe '#start_nginx' do
       it 'should create config, tests config, starts nginx and waits for nginx to start' do
 
