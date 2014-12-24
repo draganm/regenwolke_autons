@@ -16,6 +16,25 @@ module RegenwolkeAutons
       end
     end
 
+    describe '#release_port' do
+      before do
+        subject.start
+        @first_port = subject.free_ports.first
+        subject.request_port('some_id', 'some_method')
+      end
+
+      it 'should remove port from the used_ports' do
+        subject.release_port('some_id', @first_port)
+        expect(subject.used_ports).to eq({})
+      end
+
+
+      it 'should return port to the list of free ports' do
+        subject.release_port('some_id', @first_port)
+        expect(subject.free_ports.last).to eq(@first_port)
+      end
+
+    end
 
     describe '#request_port' do
       before do
@@ -33,7 +52,7 @@ module RegenwolkeAutons
       end
 
       it 'should add port allocation to used_ports' do
-        expect(subject.used_ports).to eq({"some_id"=>@first_port})
+        expect(subject.used_ports).to eq({"some_id"=>[@first_port]})
       end
 
     end
