@@ -55,8 +55,6 @@ module RegenwolkeAutons
 
       let(:docker_container) {spy :docker_container}
 
-
-
       before do
         subject.port = 123
         allow(Docker::Container).to receive(:create).and_return(docker_container)
@@ -79,8 +77,23 @@ module RegenwolkeAutons
 
     end
 
+    describe '#notify_application' do
 
+      it "should schedule :deployment_complete step with sha1 of the deployment and port number on the application auton" do
+        subject.port = 123
+        subject.application_name = 'some_app'
+        subject.git_sha1 = 'some_sha1'
+        context = double :context
+        subject.context = context
 
+        expect(context).to receive(:schedule_step_on_auton).with("application:some_app", :deployment_complete, ['some_sha1', 123])
+
+        subject.notify_application
+
+      end
+    end
 
   end
+
+
 end

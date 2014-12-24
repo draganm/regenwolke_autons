@@ -62,7 +62,7 @@ module RegenwolkeAutons
 
     def notify_application
       application_auton_id = "application:%s" % application_name
-      context.schedule_step_on_auton(application_auton_id, :deployment_complete, self.git_sha1, self.port)
+      context.schedule_step_on_auton(application_auton_id, :deployment_complete, [self.git_sha1, self.port])
     end
 
     def terminate
