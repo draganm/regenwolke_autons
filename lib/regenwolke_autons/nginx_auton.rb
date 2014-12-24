@@ -46,7 +46,7 @@ module RegenwolkeAutons
     end
 
     def reload_nginx_config
-      system('nginx','-p', 'regenwolke/nginx', '-s', 'reload') || raise("Could not reload nginx config")
+      system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config', '-s', 'reload') || raise("Could not reload nginx config")
     end
 
     def start_nginx_process
