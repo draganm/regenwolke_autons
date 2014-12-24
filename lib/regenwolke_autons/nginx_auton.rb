@@ -17,7 +17,7 @@ module RegenwolkeAutons
     end
 
     def start_nginx
-      create_config
+      create_and_save_config
       check_current_config
       start_nginx_process
       wait_for_nginx
@@ -30,7 +30,7 @@ module RegenwolkeAutons
 
 
     def reconfigure_nginx
-      create_config
+      create_and_save_config
       check_current_config
       reload_nginx_config
     end
@@ -40,6 +40,10 @@ module RegenwolkeAutons
     end
 
     private
+
+    def local_ip
+      ENV['LOCAL_IP']
+    end
 
     def reload_nginx_config
       system('nginx','-p', 'regenwolke/nginx', '-s', 'reload') || raise("Could not reload nginx config")
@@ -69,10 +73,19 @@ module RegenwolkeAutons
       raise "nginx didn't start within 20 seconds"
     end
 
+
+    def create_and_save_config
+      config = create_config
+      File.write("regenwolke/nginx/nginx.config",config)
+    end
+
     def create_config
       applications={'regenwolke' => [['localhost',ENV['PORT'] || 5000]]}
+      self.endpoints.each_pair do |name, port|
+        applications[name] = [[local_ip,port]]
+      end
       erb = ERB.new File.read(File.expand_path('../nginx_config.erb', __FILE__))
-      File.write("regenwolke/nginx/nginx.config",erb.result(binding))
+      erb.result(binding)
     end
 
   end

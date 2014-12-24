@@ -66,7 +66,7 @@ module RegenwolkeAutons
     describe '#reconfigure_nginx' do
 
       it 'should create new nginx config, check config and reload config' do
-        expect(subject).to receive(:create_config)
+        expect(subject).to receive(:create_and_save_config)
         expect(subject).to receive(:check_current_config)
         expect(subject).to receive(:reload_nginx_config)
         subject.reconfigure_nginx
@@ -77,7 +77,7 @@ module RegenwolkeAutons
     describe '#start_nginx' do
       it 'should create config, tests config, starts nginx and waits for nginx to start' do
 
-        expect(subject).to receive(:create_config)
+        expect(subject).to receive(:create_and_save_config)
         expect(subject).to receive(:system).with('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config').and_return(true)
         expect(subject).to receive(:system).with('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config').and_return(true)
         expect(subject).to receive(:wait_for_nginx)
@@ -87,7 +87,7 @@ module RegenwolkeAutons
 
       context 'when config test fails' do
         it 'should raise exception' do
-          expect(subject).to receive(:create_config)
+          expect(subject).to receive(:create_and_save_config)
           expect(subject).to receive(:system).with('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config').and_return(false)
           expect {subject.start_nginx}.to raise_error('Invalid nginx config')
         end
@@ -95,7 +95,7 @@ module RegenwolkeAutons
 
       context 'when nginx start fails' do
         it 'should raise exception' do
-          expect(subject).to receive(:create_config)
+          expect(subject).to receive(:create_and_save_config)
           expect(subject).to receive(:system).with('nginx','-t','-p', 'regenwolke/nginx', '-c', 'nginx.config').and_return(true)
           expect(subject).to receive(:system).with('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config').and_return(false)
           expect {subject.start_nginx}.to raise_error('Could not start nginx')
@@ -156,6 +156,39 @@ module RegenwolkeAutons
 
       end
 
+    end
+
+    describe '#create_config' do
+
+      before do
+        subject.endpoints={}
+        allow(subject).to receive(:local_ip).and_return('1.2.3.4')
+      end
+
+
+      context 'when there are no endpoints' do
+
+        it 'should create config with only regenwolke host entry' do
+          server_names = subject.send(:create_config).split("\n").map(&:strip!).select{ |l|  l =~ /^server .*:.*;$/}
+          expect(server_names).to eq(["server localhost:5000;"])
+        end
+
+      end
+
+      context 'when there are two app endpoints' do
+        before do
+          subject.endpoints = {'app1' => 123, 'app2' => 124}
+        end
+
+        it 'should create config with all endpoins' do
+          server_names = subject.send(:create_config).split("\n").map(&:strip!).select{ |l|  l =~ /^server .*:.*;$/}
+          expect(server_names.sort).to eq([
+            "server localhost:5000;",
+            "server 1.2.3.4:123;",
+            "server 1.2.3.4:124;"
+          ].sort)
+        end
+      end
     end
 
 
