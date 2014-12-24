@@ -8,6 +8,60 @@ module RegenwolkeAutons
       subject.context = context
     end
 
+    describe '#start' do
+      let (:context) {spy :context}
+      before do
+        subject.start
+      end
+
+      it 'should schedule :start_nginx_if_not_running step' do
+        expect(context).to have_received(:schedule_step).with(:start_nginx_if_not_running)
+      end
+
+      it 'should schedule repetition of every 90 seconds after 90 seconds wait' do
+        expect(context).to have_received(:schedule_repeating_delayed_step).with(90, 90, :start_nginx_if_not_running)
+      end
+
+      it 'should initialize endpoints hash' do
+        expect(subject.endpoints).to eq({})
+      end
+
+    end
+
+    describe '#update_endpoints' do
+
+      before { subject.endpoints = {} }
+
+      let (:context) {spy :context}
+
+      context 'when there are no existing endpoints' do
+        it 'should add new endpoints' do
+          subject.update_endpoints({'app1' => 123})
+          expect(subject.endpoints).to eq({'app1' => 123})
+        end
+      end
+
+      it 'should schedule :reconfigure_nginx step' do
+        subject.update_endpoints({'app1' => 123})
+        expect(context).to have_received(:schedule_step).with(:reconfigure_nginx)
+      end
+
+      context 'when there are existing endpoints' do
+        before { subject.endpoints = {'app1' => 123}}
+
+        it 'should add the new endpoints' do
+          subject.update_endpoints({'app2' => 124})
+          expect(subject.endpoints).to eq({'app1' => 123,'app2' => 124})
+        end
+
+        it 'should replace existing endpoints if required' do
+          subject.update_endpoints({'app1' => 124})
+          expect(subject.endpoints).to eq({'app1' => 124})
+        end
+      end
+
+    end
+
 
     describe '#start_nginx' do
       it 'should create config, tests config, starts nginx and waits for nginx to start' do

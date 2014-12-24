@@ -30,13 +30,8 @@ module RegenwolkeAutons
 
 
     def deployment_complete(git_sha1, port)
-      to_delete = {}
 
-      if current_deployment
-        to_delete[application_name]=current_deployment.port
-      end
-
-      context.schedule_step_on_auton 'nginx', :update_endpoints, [{application_name => port},to_delete]
+      context.schedule_step_on_auton 'nginx', :update_endpoints, [{application_name => port}]
 
       if current_deployment
         deployment_name = "deployment:%s:%s" % [application_name, current_deployment.git_sha1]

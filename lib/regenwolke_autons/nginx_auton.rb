@@ -13,6 +13,7 @@ module RegenwolkeAutons
     def start
       context.schedule_step(:start_nginx_if_not_running)
       context.schedule_repeating_delayed_step 90, 90, :start_nginx_if_not_running
+      self.endpoints = {}
     end
 
     def start_nginx
@@ -26,8 +27,13 @@ module RegenwolkeAutons
 
     end
 
-    def update_endpoints new_endpoints, endpoints_to_delete
-      # TODO implement and test
+    def update_endpoints new_endpoints
+      self.endpoints.merge!(new_endpoints)
+      context.schedule_step(:reconfigure_nginx)
+    end
+
+
+    def reconfigure_nginx
     end
 
     def start_nginx_if_not_running
