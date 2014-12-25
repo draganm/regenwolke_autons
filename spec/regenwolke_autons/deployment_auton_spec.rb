@@ -23,7 +23,7 @@ module RegenwolkeAutons
         expect(docker_container).to receive(:delete).with(force: true)
         expect(context).to receive(:auton_id).and_return('some_auton_id')
         expect(context).to receive(:schedule_step_on_auton).with('port_manager', :release_port, ['some_auton_id', 123])
-
+        expect(context).to receive(:terminate)
         subject.terminate
       end
     end
