@@ -1,0 +1,4 @@
+to do:
+  - Add restart of terminated/crashed containers
+  - Add check for container answering to the port / GET request
+  - Delete Capsule on termination of a deployment
