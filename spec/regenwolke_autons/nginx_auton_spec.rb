@@ -2,6 +2,19 @@ module RegenwolkeAutons
 
   describe NginxAuton do
 
+    def new_app_config(app_name, port=5000)
+      ApplicationNginxConfiguration.from_structure({
+        'host_matcher' => "#{app_name}\\..+",
+        'endpoints' => [
+          {
+            'hostname' => '1.2.3.4',
+            'port' => port
+          }
+
+        ]
+      })
+    end
+
     let(:context) {double :context}
 
     before do
@@ -22,46 +35,44 @@ module RegenwolkeAutons
         expect(context).to have_received(:schedule_repeating_delayed_step).with(90, 90, :start_nginx_if_not_running)
       end
 
-      it 'should initialize endpoints hash' do
-        expect(subject.endpoints).to eq({})
+      it 'should initialize configurations hash with regenwolke' do
+        expect(subject.configurations.to_structure).to eq({"regenwolke"=>{"host_matcher"=>"regenwolke\\..+", "endpoints"=>[{"hostname"=>"localhost", "port"=>5000}]}})
       end
 
     end
 
-    describe '#update_endpoints' do
-
-      before { subject.endpoints = {} }
+    describe '#update_application_configuration' do
 
       let (:context) {spy :context}
 
       context 'when there are no existing endpoints' do
         it 'should add new endpoints' do
-          subject.update_endpoints({'app1' => 123})
-          expect(subject.endpoints).to eq({'app1' => 123})
+          subject.update_application_configuration('app1', new_app_config('app1'))
+          expect(subject.configurations['app1'].to_structure).to eq(new_app_config('app1').to_structure)
         end
       end
 
       it 'should schedule :reconfigure_nginx step' do
-        subject.update_endpoints({'app1' => 123})
+        subject.update_application_configuration('app1', new_app_config('app1'))
         expect(context).to have_received(:schedule_step).with(:reconfigure_nginx)
       end
 
       context 'when there are existing endpoints' do
-        before { subject.endpoints = {'app1' => 123}}
+        before { subject.update_application_configuration('app1', new_app_config('app1')) }
 
         it 'should add the new endpoints' do
-          subject.update_endpoints({'app2' => 124})
-          expect(subject.endpoints).to eq({'app1' => 123,'app2' => 124})
+          subject.update_application_configuration('app2', new_app_config('app2'))
+          expect(subject.configurations['app2'].to_structure).to eq(new_app_config('app2').to_structure)
+          expect(subject.configurations['app1'].to_structure).to eq(new_app_config('app1').to_structure)
         end
 
         it 'should replace existing endpoints if required' do
-          subject.update_endpoints({'app1' => 124})
-          expect(subject.endpoints).to eq({'app1' => 124})
+          subject.update_application_configuration('app1', new_app_config('app3'))
+          expect(subject.configurations['app1'].to_structure).to eq(new_app_config('app3').to_structure)
         end
       end
 
     end
-
 
     describe '#reconfigure_nginx' do
 
@@ -161,10 +172,8 @@ module RegenwolkeAutons
     describe '#create_config' do
 
       before do
-        subject.endpoints={}
         allow(subject).to receive(:local_ip).and_return('1.2.3.4')
       end
-
 
       context 'when there are no endpoints' do
 
@@ -176,8 +185,11 @@ module RegenwolkeAutons
       end
 
       context 'when there are two app endpoints' do
+        let (:context) {spy :context}
         before do
-          subject.endpoints = {'app1' => 123, 'app2' => 124}
+          subject.update_application_configuration('app1', new_app_config('app1',123))
+          subject.update_application_configuration('app2', new_app_config('app2',124))
+
         end
 
         it 'should create config with all endpoins' do
@@ -190,7 +202,6 @@ module RegenwolkeAutons
         end
       end
     end
-
 
   end
 end

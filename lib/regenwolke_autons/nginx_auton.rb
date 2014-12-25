@@ -1,19 +1,25 @@
 require 'structure_mapper'
 require 'socket'
+require 'regenwolke_autons/application_nginx_configuration'
 
 module RegenwolkeAutons
 
+
   class NginxAuton < Nestene::Auton
 
-    attribute endpoints: {String => Fixnum}
+    attribute configurations: {String => ApplicationNginxConfiguration}
     attribute stderr: String
 
     attr_accessor :context
 
+    def initialize
+      set_initial_configurations
+    end
+
     def start
       context.schedule_step(:start_nginx_if_not_running)
       context.schedule_repeating_delayed_step 90, 90, :start_nginx_if_not_running
-      self.endpoints = {}
+      set_initial_configurations
     end
 
     def start_nginx
@@ -23,8 +29,11 @@ module RegenwolkeAutons
       wait_for_nginx
     end
 
-    def update_endpoints new_endpoints
-      self.endpoints.merge!(new_endpoints)
+    def update_application_configuration application_name, new_configuration
+      if Hash === new_configuration
+        new_configuration = ApplicationNginxConfiguration.from_structure(new_configuration)
+      end
+      self.configurations[application_name] = new_configuration
       context.schedule_step(:reconfigure_nginx)
     end
 
@@ -40,6 +49,23 @@ module RegenwolkeAutons
     end
 
     private
+
+
+    def set_initial_configurations
+
+      self.configurations = {
+        'regenwolke' => ApplicationNginxConfiguration.from_structure({
+          'host_matcher' => 'regenwolke\..+',
+          'endpoints' => [
+            {
+              'hostname' => 'localhost',
+              'port' => ENV['PORT'] || 5000
+            }
+
+          ]
+        })
+      }
+    end
 
     def local_ip
       ENV['LOCAL_IP']
@@ -73,17 +99,12 @@ module RegenwolkeAutons
       raise "nginx didn't start within 20 seconds"
     end
 
-
     def create_and_save_config
       config = create_config
       File.write("regenwolke/nginx/nginx.config",config)
     end
 
     def create_config
-      applications={'regenwolke' => [['localhost',ENV['PORT'] || 5000]]}
-      self.endpoints.each_pair do |name, port|
-        applications[name] = [[local_ip,port]]
-      end
       erb = ERB.new File.read(File.expand_path('../nginx_config.erb', __FILE__))
       erb.result(binding)
     end
