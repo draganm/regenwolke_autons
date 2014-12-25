@@ -29,7 +29,7 @@ module RegenwolkeAutons
     def start_container
       # TODO extract creation of container config to a method and thorroughly test it
       container = Docker::Container.create(
-        'Image' => 'progrium/buildstep',
+        'Image' => 'dmilhdef/buildstep',
         'Cmd' => [
           '/bin/bash',
           '-c',
