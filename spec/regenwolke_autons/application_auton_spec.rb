@@ -60,9 +60,9 @@ module RegenwolkeAutons
       context 'when there is not running deployment' do
         it 'should change endpoints on nginx' do
 
-          expect(context).to receive(:schedule_step_on_auton).with("nginx", :update_application_configuration, ["app1", {"host_matcher"=>"app1\\..+", "endpoints"=>[{"hostname"=>"2.4.5.6", "port"=>123}]}])
+          expect(context).to receive(:schedule_step_on_auton).with("nginx", :update_application_configuration, ["app1", {"host_matcher"=>"app1\\..+", "endpoints"=>[{"hostname"=>"1.2.3.4", "port"=>123}]}])
 
-          subject.deployment_complete('some_sha',123)
+          subject.deployment_complete('some_sha','1.2.3.4', 123)
         end
       end
 
@@ -79,10 +79,10 @@ module RegenwolkeAutons
 
         it 'should change endpoints on nginx and terminate existing deployment' do
 
-          expect(context).to receive(:schedule_step_on_auton).with("nginx", :update_application_configuration, ["app1", {"host_matcher"=>"app1\\..+", "endpoints"=>[{"hostname"=>"2.4.5.6", "port"=>123}]}])
+          expect(context).to receive(:schedule_step_on_auton).with("nginx", :update_application_configuration, ["app1", {"host_matcher"=>"app1\\..+", "endpoints"=>[{"hostname"=>"1.2.3.4", "port"=>123}]}])
           expect(context).to receive(:schedule_step_on_auton).with("deployment:app1:old_sha", :terminate)
 
-          subject.deployment_complete('some_sha',123)
+          subject.deployment_complete('some_sha','1.2.3.4',123)
         end
       end
 

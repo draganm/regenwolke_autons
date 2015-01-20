@@ -6,7 +6,7 @@ module RegenwolkeAutons
 
     attribute application_name: String
     attribute git_sha1: String
-    attribute port: Fixnum
+    attribute host_ip: String
     attribute container_id: String
 
     attr_accessor :context
@@ -14,15 +14,6 @@ module RegenwolkeAutons
     def start(application_name, git_sha1)
       self.application_name = application_name
       self.git_sha1 = git_sha1
-      context.schedule_step(:request_port)
-    end
-
-    def request_port
-      context.schedule_step_on_auton('port_manager',:request_port, [context.auton_id, :use_port])
-    end
-
-    def use_port port
-      self.port = port
       context.schedule_step(:start_container)
     end
 
@@ -44,31 +35,24 @@ module RegenwolkeAutons
         "HostConfig" => {
           "Binds" => [
             "/regenwolke/capsules/#{self.application_name}-#{self.git_sha1}.tar:/app.tar:ro"
-          ],
-          "PortBindings" => {
-            "5000/tcp" => [
-              {
-                "HostIp" => "",
-                "HostPort" => self.port.to_s
-              }
-            ]
-          }
+          ]
         }
       )
       container.start
       self.container_id = container.id
+      
+      self.host_ip = container.json['NetworkSettings']['IPAddress']
       context.schedule_step(:notify_application)
     end
 
     def notify_application
       application_auton_id = "application:%s" % application_name
-      context.schedule_step_on_auton(application_auton_id, :deployment_complete, [self.git_sha1, self.port])
+      context.schedule_step_on_auton(application_auton_id, :deployment_complete, [self.git_sha1, self.host_ip, 5000])
     end
 
     def terminate
       container = Docker::Container.get(self.container_id)
       container.delete(:force => true)
-      context.schedule_step_on_auton('port_manager',:release_port, [context.auton_id, self.port])
       context.terminate
     end
 

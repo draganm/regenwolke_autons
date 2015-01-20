@@ -39,7 +39,7 @@ module RegenwolkeAutons
     end
 
 
-    def deployment_complete(git_sha1, port)
+    def deployment_complete(git_sha1, host, port)
 
       if current_deployment
         deployment_name = "deployment:%s:%s" % [application_name, current_deployment.git_sha1]
@@ -57,7 +57,7 @@ module RegenwolkeAutons
           'host_matcher' => host_matcher,
           'endpoints' => [
             {
-              'hostname' => local_ip,
+              'hostname' => host,
               'port' => port
             }
           ]
@@ -66,11 +66,6 @@ module RegenwolkeAutons
 
     end
 
-    private
-
-    def local_ip
-      ENV['LOCAL_IP']
-    end
   end
 
 end
