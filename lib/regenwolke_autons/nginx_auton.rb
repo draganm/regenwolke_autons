@@ -67,10 +67,6 @@ module RegenwolkeAutons
       }
     end
 
-    def local_ip
-      ENV['LOCAL_IP']
-    end
-
     def reload_nginx_config
       system('nginx','-p', 'regenwolke/nginx', '-c', 'nginx.config', '-s', 'reload') || raise("Could not reload nginx config")
     end

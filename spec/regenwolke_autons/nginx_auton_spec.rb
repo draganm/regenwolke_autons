@@ -171,10 +171,6 @@ module RegenwolkeAutons
 
     describe '#create_config' do
 
-      before do
-        allow(subject).to receive(:local_ip).and_return('1.2.3.4')
-      end
-
       context 'when there are no endpoints' do
 
         it 'should create config with only regenwolke host entry' do
